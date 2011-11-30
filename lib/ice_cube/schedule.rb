@@ -245,11 +245,17 @@ module IceCube
       end
       # reject all of the ones outside of the range
       # round to the nearest sec because we only care about precision to the second
-      exclude_dates_rounded = exclude_dates.map(&:round)
-      include_dates_rounded = include_dates.map(&:round)
+      exclude_dates_rounded = exclude_dates.map {|d| drop_subseconds(d)}
+      include_dates_rounded = include_dates.map {|d| drop_subseconds(d)}
+      begin_time_rounded = drop_subseconds(begin_time)
+      end_time_rounded = drop_subseconds(end_time)
       
-      include_dates_rounded.reject! { |date| exclude_dates_rounded.include?(date) || date < begin_time || date > end_time }
+      include_dates_rounded.reject! { |date| exclude_dates_rounded.include?(date) || date < begin_time_rounded || date > end_time_rounded }
       include_dates_rounded.to_a
+    end
+    
+    def drop_subseconds(time)
+      Time.at(time.to_i)
     end
 
     alias :rdate :add_recurrence_date
