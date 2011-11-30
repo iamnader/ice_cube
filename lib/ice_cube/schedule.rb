@@ -138,13 +138,13 @@ module IceCube
     # In order to make this call, all rules in the schedule must have
     # either an until date or an occurrence count
     def all_occurrences
-      find_occurrences { |head, exclude_dates| head.all_occurrences }
+      find_occurrences { |head| head.all_occurrences }
     end
 
     # Find all occurrences until a certain date
     def occurrences(end_date)
       end_date = @end_time if @end_time && @end_time < end_date
-      find_occurrences { |head, exclude_dates| head.upto(end_date) }
+      find_occurrences { |head| head.upto(end_date) }
     end
 
     # Find remaining occurrences
@@ -244,8 +244,12 @@ module IceCube
         exclude_dates.merge(exrule_occurrence_head.between(begin_time, end_time))
       end
       # reject all of the ones outside of the range
-      include_dates.reject! { |date| exclude_dates.include?(date) || date < begin_time || date > end_time }
-      include_dates.to_a
+      # round to the nearest sec because we only care about precision to the second
+      exclude_dates_rounded = exclude_dates.map(&:round)
+      include_dates_rounded = include_dates.map(&:round)
+      
+      include_dates_rounded.reject! { |date| exclude_dates_rounded.include?(date) || date < begin_time || date > end_time }
+      include_dates_rounded.to_a
     end
 
     alias :rdate :add_recurrence_date
