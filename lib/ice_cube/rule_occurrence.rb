@@ -43,12 +43,12 @@ module IceCube
       rocs = []
       count = 0
       nexts = find_occurrences do |roc|
-        unless exclude_dates.include?(roc.to_time)
+        unless exclude_dates.include?(roc)
           count += 1
           rocs << roc
         end
 
-        count > n
+        count >= n
       end
 
       rocs
