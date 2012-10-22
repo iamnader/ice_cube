@@ -16,7 +16,9 @@ module IceCube
     def self.deserialize_time(time_or_hash) 
       return time_or_hash if time_or_hash.is_a?(Time) # for backward-compat
       if time_or_hash.is_a?(Hash)
-        time_or_hash[:time].in_time_zone(time_or_hash[:zone])
+        time = time_or_hash[:time]
+        time = Time.parse(time) if time.is_a?(String)
+        time.in_time_zone(time_or_hash[:zone])
       end
     end
 
